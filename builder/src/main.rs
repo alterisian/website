@@ -3,6 +3,7 @@ mod html;
 
 mod components;
 mod constants;
+mod expected_targets;
 mod file_specs;
 mod fonts;
 mod graphic_file_specs;
@@ -13,29 +14,28 @@ mod relative_path;
 mod style;
 mod syn_helpers;
 mod tailwind;
-mod targets;
 mod url;
 
 use builder::OUTPUT_DIR;
 use ssg_child::generate_static_site;
 
-use bool_ext::BoolExt;
+use anyhow::Result;
 use futures::StreamExt;
 
 #[tokio::main]
-async fn main() -> Result<(), ()> {
-    let file_specs = file_specs::get().await;
+async fn main() -> Result<()> {
+    let file_specs = file_specs::get().await?;
 
     generate_static_site(OUTPUT_DIR.clone(), file_specs)
-        .all(|progress_report| async move {
+        .map(|progress_report| {
             eprintln!("{progress_report:?}");
-
-            progress_report.is_ok()
+            progress_report
         })
+        .collect::<Result<FinalReport, ()>>()
         .await
         .to_result()?;
 
-    tailwind::execute().await.map_err(|_| ())?;
+    tailwind::execute().await?;
 
     Ok(())
 }

@@ -1,9 +1,12 @@
+use getset::Getters;
 use relative_path::RelativePathBuf;
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, thiserror::Error, Getters)]
 #[error("Failed to generate {spec_target_path}: {source}")]
 pub struct TargetError {
+    #[getset(get = "pub")]
     spec_target_path: RelativePathBuf,
+    #[getset(get = "pub")]
     source: TargetErrorCause,
 }
 
@@ -17,7 +20,7 @@ impl TargetError {
 }
 
 #[derive(Debug, thiserror::Error)]
-pub(crate) enum TargetErrorCause {
+pub enum TargetErrorCause {
     #[error(transparent)]
     Source(Box<dyn std::error::Error + Send>),
     #[error(transparent)]
