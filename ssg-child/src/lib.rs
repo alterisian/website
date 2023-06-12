@@ -1,6 +1,6 @@
 mod disk_caching_http_client;
 mod file_spec;
-mod final_report;
+pub mod final_error;
 pub mod sources;
 pub mod target_error;
 pub mod target_success;

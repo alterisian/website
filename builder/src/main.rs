@@ -17,7 +17,7 @@ mod tailwind;
 mod url;
 
 use builder::OUTPUT_DIR;
-use ssg_child::generate_static_site;
+use ssg_child::{generate_static_site, final_error::FinalError};
 
 use anyhow::Result;
 use futures::StreamExt;
@@ -31,7 +31,7 @@ async fn main() -> Result<()> {
             eprintln!("{progress_report:?}");
             progress_report
         })
-        .collect::<Result<FinalReport, ()>>()
+        .collect::<Result<(), FinalError>>()
         .await
         .to_result()?;
 
