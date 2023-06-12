@@ -17,7 +17,7 @@ mod tailwind;
 mod url;
 
 use builder::OUTPUT_DIR;
-use ssg_child::{generate_static_site, final_error::FinalError};
+use ssg_child::{final_error::FinalError, generate_static_site};
 
 use anyhow::Result;
 use futures::StreamExt;
@@ -27,13 +27,17 @@ async fn main() -> Result<()> {
     let file_specs = file_specs::get().await?;
 
     generate_static_site(OUTPUT_DIR.clone(), file_specs)
-        .map(|progress_report| {
+        .on_target_result(|progress_report| {
             eprintln!("{progress_report:?}");
-            progress_report
         })
-        .collect::<Result<(), FinalError>>()
-        .await
-        .to_result()?;
+        .await?;
+    // .map(|progress_report| {
+    //     eprintln!("{progress_report:?}");
+    //     progress_report
+    // })
+    // .collect::<Result<(), FinalError>>()
+    // .await
+    // .to_result()?;
 
     tailwind::execute().await?;
 
