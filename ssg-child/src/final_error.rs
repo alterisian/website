@@ -3,7 +3,10 @@ mod failed_targets;
 mod missing_targets;
 mod processed_targets_count;
 
-use std::fmt::Display;
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    fmt::Display,
+};
 
 use relative_path::RelativePathBuf;
 
@@ -44,22 +47,23 @@ pub(crate) struct FinalErrorBuilder {
     //
     // Keys are missing expected targets.
     // Values are a set of targets that expect that key target.
-    missing_targets: MissingTargets,
+    missing_targets: BTreeMap<RelativePathBuf, BTreeSet<RelativePathBuf>>,
 
     // List of targets with failures.
-    failed_targets: FailedTargets,
+    failed_targets: BTreeSet<RelativePathBuf>,
 }
 impl FinalErrorBuilder {
-    pub(crate) fn add(self, processing_result: Result<TargetSuccess, TargetError>) -> Self {
+    pub(crate) fn add(mut self, processing_result: Result<TargetSuccess, TargetError>) -> Self {
         let (target, expected_targets) = match &processing_result {
-            Ok(success) => success.clone(),
+            Ok(success) => {
+                let target = success.path().clone();
+                let expected_targets = success.expected_targets().clone();
+                (target, expected_targets)
+            }
             Err(target_error) => {
-                self.failed_targets
-                    .insert(target_error.spec_target_path().clone());
-                (
-                    target_error.spec_target_path().clone(),
-                    ExpectedTargets::default(),
-                )
+                let target = target_error.spec_target_path().clone();
+                self.failed_targets.insert(target.clone());
+                (target, ExpectedTargets::default())
             }
         };
 
@@ -89,7 +93,7 @@ impl FinalErrorBuilder {
         if duplicates.is_some() || missing_targets.is_some() || failed_targets.is_some() {
             Err(FinalError {
                 duplicates,
-                missing_targets,
+                missing_target,
                 failed_targets,
             })
         } else {

@@ -2,9 +2,11 @@ use relative_path::RelativePathBuf;
 
 use crate::sources::ExpectedTargets;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, getset::Getters)]
 pub struct TargetSuccess {
+    #[getset(get = "pub")]
     path: RelativePathBuf,
+    #[getset(get = "pub")]
     expected_targets: ExpectedTargets,
 }
 
