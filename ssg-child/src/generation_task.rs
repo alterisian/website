@@ -8,7 +8,7 @@ use crate::{
     target_success::TargetSuccess,
 };
 
-pub struct GenerationTask(Box<dyn Stream<Item = Result<TargetSuccess, TargetError>>>);
+pub struct GenerationTask(Box<dyn Stream<Item = Result<TargetSuccess, TargetError>> + Sized >);
 
 impl GenerationTask {
     pub(crate) fn new(stream: Box<dyn Stream<Item = Result<TargetSuccess, TargetError>>>) -> Self {
