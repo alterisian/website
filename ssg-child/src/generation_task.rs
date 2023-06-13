@@ -16,7 +16,7 @@ impl<T> GenerationTask<T> {
     }
 }
 
-impl<T> IntoFuture for GenerationTask<T> where T: Stream {
+impl<T> IntoFuture for GenerationTask<T> where T: Stream<Item = Result<TargetSuccess, TargetError>> {
     type Output = Result<(), FinalError>;
     type IntoFuture = BoxFuture<'static, Self::Output>;
 
@@ -24,8 +24,7 @@ impl<T> IntoFuture for GenerationTask<T> where T: Stream {
         async {
             let final_error = self
                 .0
-                .fold(FinalErrorBuilder::default(), FinalErrorBuilder::add)
-                .await
+                .fold(FinalErrorBuilder::default(), FinalErrorBuilder::add).await
                 .build();
             if let Some(final_error) = final_error {
                 Err(final_error)
