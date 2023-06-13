@@ -84,4 +84,22 @@ impl FinalErrorBuilder {
 
         processing_result
     }
+
+    pub(crate) fn build(self) -> Result<(), FinalError> {
+        let duplicates_error =
+            DuplicatesError::from_processed_targets_count(self.processed_targets_count);
+
+        // TODO different types?
+        let missing_targets = self.missing_targets.is_empty().then_some(t)
+
+        if self.has_errors() {
+            Err(FinalError {
+                processed_targets_count: todo!(),
+                missing_targets: todo!(),
+                failed_targets: todo!(),
+            })
+        } else {
+            Ok(())
+        }
+    }
 }

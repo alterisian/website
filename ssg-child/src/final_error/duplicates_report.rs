@@ -10,7 +10,7 @@ pub struct DuplicatesError(BTreeMap<RelativePathBuf, usize>);
 
 impl DuplicatesError {
     pub(super) fn from_processed_targets_count(
-        processed_targets_count: &ProcessedTargetsCount,
+        processed_targets_count: ProcessedTargetsCount,
     ) -> Option<Self> {
         let duplicates = processed_targets_count
             .iter()
