@@ -4,7 +4,7 @@ use relative_path::RelativePathBuf;
 
 use super::processed_targets_count::ProcessedTargetsCount;
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 #[error("duplicates: {0:?}")]
 pub struct DuplicatesError(BTreeMap<RelativePathBuf, usize>);
 

@@ -14,26 +14,18 @@ use self::{
     missing_targets::MissingTargets, processed_targets_count::ProcessedTargetsCount,
 };
 
-impl FinalError {
-    pub fn duplicates(&self) -> Option<DuplicatesError> {
-        DuplicatesError::from_processed_targets_count(&self.processed_targets_count)
-    }
-}
-
-#[derive(Debug, Clone, Default, thiserror::Error)]
+#[derive(Debug, Clone, getset::Getters, thiserror::Error)]
 pub struct FinalError {
-    // Keys are the paths of processed targets.
-    // Values are the number of times a target has been processed.
-    processed_targets_count: ProcessedTargetsCount,
+    duplicates: Option<DuplicatesError>,
 
     // A report on missing expected targets.
     //
     // Keys are missing expected targets.
     // Values are a set of targets that expect that key target.
-    missing_targets: MissingTargets,
+    missing_targets: Option<MissingTargets>,
 
     // List of targets with failures.
-    failed_targets: FailedTargets,
+    failed_targets: Option<FailedTargets>,
 }
 
 impl Display for FinalError {
@@ -43,7 +35,7 @@ impl Display for FinalError {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct FinalErrorBuilder {
+pub(crate) struct FinalErrorBuilder {
     // Keys are the paths of processed targets.
     // Values are the number of times a target has been processed.
     processed_targets_count: ProcessedTargetsCount,
@@ -86,17 +78,19 @@ impl FinalErrorBuilder {
     }
 
     pub(crate) fn build(self) -> Result<(), FinalError> {
-        let duplicates_error =
+        let duplicates =
             DuplicatesError::from_processed_targets_count(self.processed_targets_count);
 
         // TODO different types?
-        let missing_targets = self.missing_targets.is_empty().then_some(t)
+        let missing_targets = (!self.missing_targets.is_empty()).then_some(self.missing_targets);
 
-        if self.has_errors() {
+        let failed_targets = (!self.failed_targets.is_empty()).then_some(self.failed_targets);
+
+        if duplicates.is_some() || missing_targets.is_some() || failed_targets.is_some() {
             Err(FinalError {
-                processed_targets_count: todo!(),
-                missing_targets: todo!(),
-                failed_targets: todo!(),
+                duplicates,
+                missing_targets,
+                failed_targets,
             })
         } else {
             Ok(())
