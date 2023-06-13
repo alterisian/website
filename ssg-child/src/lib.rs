@@ -13,13 +13,13 @@ use generation_task::GenerationTask;
 
 use target_error::TargetError;
 
-pub fn generate_static_site(
+pub fn generate_static_site<T>(
     output_dir: Utf8PathBuf,
     file_specs: impl IntoIterator<Item = FileSpec> + 'static,
-) -> GenerationTask {
+) -> GenerationTask<T> {
     let stream = stream::iter(file_specs)
         .map(move |file_spec| file_spec.generate(output_dir.clone()))
         .buffer_unordered(usize::MAX);
 
-    GenerationTask::new(Box::new(stream))
+    GenerationTask::new(stream)
 }

@@ -8,15 +8,15 @@ use crate::{
     target_success::TargetSuccess,
 };
 
-pub struct GenerationTask(Box<dyn Stream<Item = Result<TargetSuccess, TargetError>>>);
+pub struct GenerationTask<T>(T);
 
-impl GenerationTask {
-    pub(crate) fn new(stream: Box<dyn Stream<Item = Result<TargetSuccess, TargetError>>>) -> Self {
+impl<T> GenerationTask<T> {
+    pub(crate) fn new(stream: T) -> Self {
         Self(stream)
     }
 }
 
-impl IntoFuture for GenerationTask {
+impl<T> IntoFuture for GenerationTask<T> where T: Stream {
     type Output = Result<(), FinalError>;
     type IntoFuture = BoxFuture<'static, Self::Output>;
 
