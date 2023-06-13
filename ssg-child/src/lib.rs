@@ -13,7 +13,7 @@ use generation_task::GenerationTask;
 
 use target_error::TargetError;
 
-type Stream = <()>;
+type Stream = ();
 
 /// Panics on duplicate `FileSpec` targets
 pub fn generate_static_site(
