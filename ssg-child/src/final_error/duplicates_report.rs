@@ -1,8 +1,8 @@
 use std::collections::BTreeMap;
 
-use relative_path::{RelativePath, RelativePathBuf};
+use relative_path::RelativePathBuf;
 
-use super::processed_targets_count::{self, ProcessedTargetsCount};
+use super::processed_targets_count::ProcessedTargetsCount;
 
 #[derive(Debug, thiserror::Error)]
 #[error("duplicates: {0:?}")]
