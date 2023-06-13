@@ -2,7 +2,11 @@ use std::future::IntoFuture;
 
 use futures::{Stream, StreamExt};
 
-use crate::{target_error::TargetError, target_success::TargetSuccess, final_error::FinalError};
+use crate::{
+    final_error::{FinalError, FinalErrorBuilder},
+    target_error::TargetError,
+    target_success::TargetSuccess,
+};
 
 pub struct GenerationTask(Box<dyn Stream<Item = Result<TargetSuccess, TargetError>>>);
 
@@ -20,6 +24,11 @@ impl IntoFuture for GenerationTask {
     type IntoFuture = ();
 
     fn into_future(self) -> Self::IntoFuture {
-        self.0.fold(FinalErrorBuilder, |)
+        async {
+            self.0
+                .fold(FinalErrorBuilder::default(), FinalErrorBuilder::add)
+                .await
+                .build()
+        }
     }
 }
