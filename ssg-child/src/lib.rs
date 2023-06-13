@@ -21,5 +21,5 @@ pub fn generate_static_site(
         .map(move |file_spec| file_spec.generate(output_dir.clone()))
         .buffer_unordered(usize::MAX);
 
-    GenerationTask::new(stream.boxed())
+    GenerationTask::new(Box::new(stream))
 }

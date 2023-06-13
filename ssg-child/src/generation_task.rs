@@ -1,6 +1,6 @@
 use std::future::IntoFuture;
 
-use futures::{future::BoxFuture, stream::BoxStream, FutureExt, StreamExt};
+use futures::{future::BoxFuture, stream::BoxStream, FutureExt, Stream, StreamExt};
 
 use crate::{
     final_error::{FinalError, FinalErrorBuilder},
@@ -8,17 +8,16 @@ use crate::{
     target_success::TargetSuccess,
 };
 
-pub struct GenerationTask(BoxStream<'static, Result<TargetSuccess, TargetError>>);
+pub struct GenerationTask(Box<dyn Stream<Item = Result<TargetSuccess, TargetError>>>);
 
 impl GenerationTask {
-    pub(crate) fn new(stream: BoxStream<'static, Result<TargetSuccess, TargetError>>) -> Self {
+    pub(crate) fn new(stream: Box<dyn Stream<Item = Result<TargetSuccess, TargetError>>>) -> Self {
         Self(stream)
     }
 }
 
 impl IntoFuture for GenerationTask {
     type Output = Result<(), FinalError>;
-
     type IntoFuture = BoxFuture<'static, Self::Output>;
 
     fn into_future(self) -> Self::IntoFuture {
