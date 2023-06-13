@@ -13,7 +13,6 @@ use generation_task::GenerationTask;
 
 use target_error::TargetError;
 
-/// Panics on duplicate `FileSpec` targets
 pub fn generate_static_site(
     output_dir: Utf8PathBuf,
     file_specs: impl IntoIterator<Item = FileSpec> + 'static,

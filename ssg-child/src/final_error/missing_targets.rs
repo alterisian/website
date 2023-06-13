@@ -1,6 +1,6 @@
-use std::collections::{btree_map::Entry, BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet};
 
-use relative_path::{RelativePath, RelativePathBuf};
+use relative_path::RelativePathBuf;
 
 #[derive(Debug, Clone)]
 pub(super) struct MissingTargets(BTreeMap<RelativePathBuf, BTreeSet<RelativePathBuf>>);
