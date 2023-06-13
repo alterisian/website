@@ -53,7 +53,7 @@ pub(crate) struct FinalErrorBuilder {
     failed_targets: BTreeSet<RelativePathBuf>,
 }
 impl FinalErrorBuilder {
-    pub(crate) fn add(mut self, processing_result: Result<TargetSuccess, TargetError>) -> Self {
+    pub(crate) fn add(&mut self, processing_result: Result<TargetSuccess, TargetError>) {
         let (target, expected_targets) = match &processing_result {
             Ok(success) => {
                 let target = success.path().clone();
@@ -77,8 +77,6 @@ impl FinalErrorBuilder {
         self.missing_targets.remove(&target);
 
         *self.processed_targets_count.entry(target).or_default() += 1;
-
-        self
     }
 
     pub(crate) fn build(self) -> Option<FinalError> {
