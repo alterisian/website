@@ -78,26 +78,33 @@ impl FinalErrorBuilder {
 
         *self.processed_targets_count.entry(target).or_default() += 1;
 
-        processing_result
+        self
     }
 
-    pub(crate) fn build(self) -> Result<(), FinalError> {
+    pub(crate) fn build(self) -> Option<FinalError> {
         let duplicates =
             DuplicatesError::from_processed_targets_count(self.processed_targets_count);
 
-        // TODO different types?
-        let missing_targets = (!self.missing_targets.is_empty()).then_some(self.missing_targets);
+        let missing_targets = if self.missing_targets.is_empty() {
+            None
+        } else {
+            Some(MissingTargets::new(self.missing_targets))
+        };
 
-        let failed_targets = (!self.failed_targets.is_empty()).then_some(self.failed_targets);
+        let failed_targets = if self.failed_targets.is_empty() {
+            None
+        } else {
+            Some(FailedTargets::new(self.failed_targets))
+        };
 
         if duplicates.is_some() || missing_targets.is_some() || failed_targets.is_some() {
-            Err(FinalError {
+            Some(FinalError {
                 duplicates,
-                missing_target,
                 failed_targets,
+                missing_targets,
             })
         } else {
-            Ok(())
+            None
         }
     }
 }

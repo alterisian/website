@@ -8,10 +8,7 @@ pub mod target_success;
 
 use camino::Utf8PathBuf;
 pub use file_spec::FileSpec;
-use futures::{
-    stream::{self, BufferUnordered},
-    StreamExt,
-};
+use futures::{stream, StreamExt};
 use generation_task::GenerationTask;
 
 use target_error::TargetError;
@@ -25,5 +22,5 @@ pub fn generate_static_site(
         .map(move |file_spec| file_spec.generate(output_dir.clone()))
         .buffer_unordered(usize::MAX);
 
-    GenerationTask::new(stream)
+    GenerationTask::new(stream.boxed())
 }
