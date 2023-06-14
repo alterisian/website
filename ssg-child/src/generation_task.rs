@@ -11,18 +11,15 @@ use crate::{
     target_success::TargetSuccess,
 };
 
-pub struct GenerationTask<T>(T);
+pub struct GenerationTask(Pin<Box<dyn Stream<Item = Result<TargetSuccess, TargetError>>>>);
 
-impl<T> GenerationTask<T> {
-    pub(crate) fn new(stream: T) -> Self {
-        Self(stream)
+impl GenerationTask {
+    pub(crate) fn new(stream: impl Stream<Item = Result<TargetSuccess, TargetError>> + 'static) -> Self {
+        Self(Box::pin(stream))
     }
 }
 
-impl<T> IntoFuture for GenerationTask<T>
-where
-    T: Stream<Item = Result<TargetSuccess, TargetError>>,
-{
+impl IntoFuture for GenerationTask {
     type Output = Result<(), FinalError>;
     type IntoFuture = Pin<Box<dyn Future<Output = Self::Output>>>;
 
