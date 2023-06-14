@@ -83,8 +83,6 @@ impl FinalErrorBuilder {
                 .insert(target.clone());
         });
 
-        self.missing_targets.remove(&target);
-
         *self.processed_targets_count.entry(target).or_default() += 1;
     }
 
