@@ -9,6 +9,7 @@ pub(super) struct MissingTargets(BTreeMap<RelativePathBuf, BTreeSet<RelativePath
 impl MissingTargets {
     pub(crate) fn new(
         missing_targets: BTreeMap<RelativePathBuf, BTreeSet<RelativePathBuf>>,
+        processed_targets: BTreeMap<>
     ) -> Self {
         Self(missing_targets)
     }

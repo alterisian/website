@@ -16,5 +16,8 @@ impl ProcessedTargetsCount {
     pub(crate) fn iter(&self) -> Iter<relative_path::RelativePathBuf, usize> {
         self.0.iter()
     }
-}
 
+    pub(crate) fn keys(&self) -> impl Iterator<Item = relative_path::RelativePathBuf> {
+        self.0.keys()
+    }
+}

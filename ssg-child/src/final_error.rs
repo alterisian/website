@@ -52,11 +52,9 @@ pub(crate) struct FinalErrorBuilder {
     // Values are the number of times a target has been processed.
     processed_targets_count: ProcessedTargetsCount,
 
-    // A report on missing expected targets.
-    //
-    // Keys are missing expected targets.
+    // Keys are expected targets.
     // Values are a set of targets that expect that key target.
-    missing_targets: BTreeMap<RelativePathBuf, BTreeSet<RelativePathBuf>>,
+    expected_targets: BTreeMap<RelativePathBuf, BTreeSet<RelativePathBuf>>,
 
     // List of targets with failures.
     failed_targets: BTreeSet<RelativePathBuf>,
@@ -77,7 +75,7 @@ impl FinalErrorBuilder {
         };
 
         expected_targets.into_iter().for_each(|expected_target| {
-            self.missing_targets
+            self.expected_targets
                 .entry(expected_target)
                 .or_default()
                 .insert(target.clone());
@@ -87,14 +85,11 @@ impl FinalErrorBuilder {
     }
 
     pub(crate) fn build(self) -> Option<FinalError> {
+
+        let missing_targets = MissingTargets::new(self.expected_targets, &self.processed_targets_count.keys());
+
         let duplicates =
             DuplicatesError::from_processed_targets_count(self.processed_targets_count);
-
-        let missing_targets = if self.missing_targets.is_empty() {
-            None
-        } else {
-            Some(MissingTargets::new(self.missing_targets))
-        };
 
         let failed_targets = if self.failed_targets.is_empty() {
             None
