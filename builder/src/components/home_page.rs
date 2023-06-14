@@ -122,7 +122,7 @@ pub(crate) fn event_content_template(
             .unwrap();
 
     let content = html! {
-        a class=(classes!("no-underline", "block", "h-full")) href=(target_path.to_string()) {
+        a class=(classes!("no-underline", "block", "h-full")) href=(target_path) {
             (mob.title())
 
             @if let Some(status_indicator) = mob.status().indicator() {

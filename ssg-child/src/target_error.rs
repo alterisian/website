@@ -3,7 +3,7 @@ use relative_path::RelativePathBuf;
 
 #[derive(Debug, thiserror::Error, Getters)]
 #[error("Failed to generate {spec_target_path}: {source}")]
-pub struct TargetError {
+pub(crate) struct TargetError {
     #[getset(get = "pub")]
     spec_target_path: RelativePathBuf,
     #[getset(get = "pub")]

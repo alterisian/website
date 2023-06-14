@@ -15,6 +15,11 @@ impl MissingTargets {
             .into_iter()
             .filter(|(expected, _expectors)| !processed_targets.contains(expected))
             .collect();
-        (!collect.is_empty()).then_some(Self(collect))
+
+        if collect.is_empty() {
+            Some(Self(collect))
+        } else {
+            None
+        }
     }
 }

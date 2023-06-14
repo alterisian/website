@@ -10,7 +10,7 @@ pub(super) mod title;
 use std::collections::BTreeSet;
 use std::io;
 
-use anyhow::{anyhow, Context, Error, Result};
+use anyhow::{anyhow, Context, Result};
 use chrono::DateTime;
 use csscolorparser::Color;
 use getset::Getters;
@@ -58,7 +58,7 @@ pub struct Mob {
 }
 
 impl TryFrom<(String, MobFile)> for Mob {
-    type Error = Error;
+    type Error = anyhow::Error;
     fn try_from((id, yaml): (String, MobFile)) -> Result<Self, Self::Error> {
         Ok(Mob {
             id: Id::new(id),

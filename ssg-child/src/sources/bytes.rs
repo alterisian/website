@@ -1,4 +1,4 @@
-use futures::FutureExt;
+use futures::{future::BoxFuture, FutureExt};
 
 use super::{ExpectedTargets, FileContents, FileSource};
 
@@ -20,9 +20,7 @@ impl BytesSource {
 }
 
 impl FileSource for BytesSource {
-    fn obtain_content(
-        &self,
-    ) -> futures::future::BoxFuture<Result<FileContents, Box<dyn std::error::Error + Send>>> {
+    fn obtain_content(&self) -> BoxFuture<'static, Result<FileContents, Box<dyn std::error::Error + Send>>> {
         async {
             Ok(FileContents::new(
                 self.bytes.clone(),

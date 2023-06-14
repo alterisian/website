@@ -20,14 +20,7 @@ use self::{
 #[derive(Debug, Clone, getset::Getters, thiserror::Error)]
 pub struct FinalError {
     duplicates: Option<DuplicatesError>,
-
-    // A report on missing expected targets.
-    //
-    // Keys are missing expected targets.
-    // Values are a set of targets that expect that key target.
     missing_targets: Option<MissingTargets>,
-
-    // List of targets with failures.
     failed_targets: Option<FailedTargets>,
 }
 
@@ -36,31 +29,29 @@ impl Display for FinalError {
         if let Some(duplicates) = &self.duplicates {
             writeln!(f, "{duplicates}")?
         }
+
         if let Some(missing_targets) = &self.missing_targets {
             writeln!(f, "{missing_targets}")?
         }
+
         if let Some(failed_targets) = &self.failed_targets {
             writeln!(f, "{failed_targets}")?
         }
+
         Ok(())
     }
 }
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FinalErrorBuilder {
-    // Keys are the paths of processed targets.
-    // Values are the number of times a target has been processed.
     processed_targets_count: ProcessedTargetsCount,
-
-    // Keys are expected targets.
-    // Values are a set of targets that expect that key target.
+    // key is expected target, values are targets expecting it
     expected_targets: BTreeMap<RelativePathBuf, BTreeSet<RelativePathBuf>>,
-
-    // List of targets with failures.
     failed_targets: BTreeSet<RelativePathBuf>,
 }
+
 impl FinalErrorBuilder {
-    pub(crate) fn add(&mut self, processing_result: Result<TargetSuccess, TargetError>) {
+    pub(crate) fn add(mut self, processing_result: Result<TargetSuccess, TargetError>) -> Self {
         let (target, expected_targets) = match &processing_result {
             Ok(success) => {
                 let target = success.path().clone();
@@ -82,6 +73,8 @@ impl FinalErrorBuilder {
         });
 
         *self.processed_targets_count.entry(target).or_default() += 1;
+
+        self
     }
 
     pub(crate) fn build(self) -> Option<FinalError> {

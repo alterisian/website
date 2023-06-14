@@ -26,9 +26,8 @@ impl IntoFuture for GenerationTask {
         let future = async {
             let final_error = self
                 .0
-                .fold(FinalErrorBuilder::default(), |mut builder, result| async {
-                    builder.add(result);
-                    builder
+                .fold(FinalErrorBuilder::default(), |builder, result| async {
+                    builder.add(result)
                 })
                 .await
                 .build();

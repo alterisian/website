@@ -17,6 +17,7 @@ impl DuplicatesError {
             .filter(|(_target, &count)| count > 1)
             .map(|(target, &count)| (target.clone(), count))
             .collect::<BTreeMap<RelativePathBuf, usize>>();
+
         if duplicates.is_empty() {
             None
         } else {
