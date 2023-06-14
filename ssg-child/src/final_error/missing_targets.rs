@@ -11,10 +11,10 @@ impl MissingTargets {
         expected_targets: BTreeMap<RelativePathBuf, BTreeSet<RelativePathBuf>>,
         processed_targets: BTreeSet<RelativePathBuf>,
     ) -> Option<Self> {
-        let collect = expected_targets
+        let collect: BTreeMap<_, _> = expected_targets
             .into_iter()
             .filter(|(expected, _expectors)| !processed_targets.contains(expected))
             .collect();
-        Self(collect)
+        (!collect.is_empty()).then_some(Self(collect))
     }
 }
