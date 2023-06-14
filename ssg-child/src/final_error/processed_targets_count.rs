@@ -13,11 +13,11 @@ impl ProcessedTargetsCount {
         self.0.entry(path)
     }
 
-    pub(crate) fn iter(&self) -> Iter<relative_path::RelativePathBuf, usize> {
+    pub(crate) fn iter(&self) -> Iter<RelativePathBuf, usize> {
         self.0.iter()
     }
 
-    pub(crate) fn keys(&self) -> impl Iterator<Item = relative_path::RelativePathBuf> {
-        self.0.keys()
+    pub(crate) fn keys(&self) -> impl Iterator<Item = RelativePathBuf> {
+        self.0.clone().into_keys()
     }
 }

@@ -8,9 +8,13 @@ pub(super) struct MissingTargets(BTreeMap<RelativePathBuf, BTreeSet<RelativePath
 
 impl MissingTargets {
     pub(crate) fn new(
-        missing_targets: BTreeMap<RelativePathBuf, BTreeSet<RelativePathBuf>>,
-        processed_targets: BTreeMap<>
-    ) -> Self {
-        Self(missing_targets)
+        expected_targets: BTreeMap<RelativePathBuf, BTreeSet<RelativePathBuf>>,
+        processed_targets: BTreeSet<RelativePathBuf>,
+    ) -> Option<Self> {
+        let collect = expected_targets
+            .into_iter()
+            .filter(|(expected, _expectors)| !processed_targets.contains(expected))
+            .collect();
+        Self(collect)
     }
 }

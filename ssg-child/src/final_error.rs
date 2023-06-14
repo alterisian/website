@@ -85,8 +85,10 @@ impl FinalErrorBuilder {
     }
 
     pub(crate) fn build(self) -> Option<FinalError> {
-
-        let missing_targets = MissingTargets::new(self.expected_targets, &self.processed_targets_count.keys());
+        let missing_targets = MissingTargets::new(
+            self.expected_targets,
+            self.processed_targets_count.keys().collect(),
+        );
 
         let duplicates =
             DuplicatesError::from_processed_targets_count(self.processed_targets_count);
