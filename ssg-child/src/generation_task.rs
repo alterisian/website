@@ -1,9 +1,6 @@
-use std::{
-    future::IntoFuture,
-    pin::{pin, Pin},
-};
+use std::{future::IntoFuture, pin::Pin};
 
-use futures::{future::BoxFuture, stream::BoxStream, Future, FutureExt, Stream, StreamExt};
+use futures::{Future, Stream, StreamExt};
 
 use crate::{
     final_error::{FinalError, FinalErrorBuilder},
@@ -14,7 +11,9 @@ use crate::{
 pub struct GenerationTask(Pin<Box<dyn Stream<Item = Result<TargetSuccess, TargetError>>>>);
 
 impl GenerationTask {
-    pub(crate) fn new(stream: impl Stream<Item = Result<TargetSuccess, TargetError>> + 'static) -> Self {
+    pub(crate) fn new(
+        stream: impl Stream<Item = Result<TargetSuccess, TargetError>> + 'static,
+    ) -> Self {
         Self(Box::pin(stream))
     }
 }
@@ -27,7 +26,7 @@ impl IntoFuture for GenerationTask {
         let future = async {
             let final_error = self
                 .0
-                .fold(FinalErrorBuilder::default(), |builder, result| async {
+                .fold(FinalErrorBuilder::default(), |mut builder, result| async {
                     builder.add(result);
                     builder
                 })

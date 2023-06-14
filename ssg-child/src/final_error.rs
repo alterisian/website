@@ -33,7 +33,16 @@ pub struct FinalError {
 
 impl Display for FinalError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        if let Some(duplicates) = &self.duplicates {
+            writeln!(f, "{duplicates}")?
+        }
+        if let Some(missing_targets) = &self.missing_targets {
+            writeln!(f, "{missing_targets}")?
+        }
+        if let Some(failed_targets) = &self.failed_targets {
+            writeln!(f, "{failed_targets}")?
+        }
+        Ok(())
     }
 }
 

@@ -17,10 +17,9 @@ mod tailwind;
 mod url;
 
 use builder::OUTPUT_DIR;
-use ssg_child::{final_error::FinalError, generate_static_site};
+use ssg_child::generate_static_site;
 
 use anyhow::Result;
-use futures::StreamExt;
 
 #[tokio::main]
 async fn main() -> Result<()> {
